@@ -290,3 +290,18 @@ class Bill {
     }  
 }
 ```
+### SRP: Single Responsibility Principle
+<span style="color: #ff0000">√</span> 하나의 클래스는 단 한 가지의 변경 이유만을 가져야 한다.    
+→ '변경 이유' = 책임   
+
+<span style="color: #ff0000">√</span> 객체가 가진 공개 메서드, 필드, 상수 등은 해당 객체의 단일 책임에 의해서만 변경 되는가?    
+
+<span style="color: #ff0000">√</span> 관심사의 분리
+
+<span style="color: #ff0000">√</span> 높은 응집도, 낮은 결합도    
+
+### OCP: Open-Closed Principle
+<span style="color: #ff0000">√</span> 확장에는 열려 있고, 수정에는 닫혀 있어야 한다.    
+→ 기존 코드의 변경 없이, 시스템의 기능을 확장할 수 있어야 한다.   
+
+<span style="color: #ff0000">√</span> 추상화와 다영형을 활용해서 OCP를 지킬 수 있다.    

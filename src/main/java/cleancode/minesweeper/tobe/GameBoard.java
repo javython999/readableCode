@@ -1,0 +1,148 @@
+package cleancode.minesweeper.tobe;
+
+import cleancode.minesweeper.tobe.gamelevel.GameLevel;
+
+import java.util.Arrays;
+import java.util.Random;
+
+public class GameBoard {
+
+    private Cell[][] board;
+    private int landMineCount;
+
+    public GameBoard(GameLevel gameLevel) {
+        board = new Cell[gameLevel.getRowSize()][gameLevel.getColSize()];
+        landMineCount = gameLevel.getLandMineCount();
+    }
+
+    public void initializeGame() {
+        int rowSize = getRowSize();
+        int colSize = getColSize();
+
+        for (int row = 0; row < rowSize; row++) {
+            for (int col = 0; col < colSize; col++) {
+                board[row][col] = Cell.create();
+            }
+        }
+
+        for (int i = 0; i < landMineCount; i++) {
+            int landMineRow = new Random().nextInt(rowSize);
+            int landMincCol = new Random().nextInt(colSize);
+            findCell(landMineRow, landMincCol).turnOnLandMine();
+        }
+
+        for (int row = 0; row < rowSize; row++) {
+            for (int col = 0; col < colSize; col++) {
+                if (isLandMineCell(row, col)) {
+                    continue;
+                }
+                int count = countNearbyLandMines(row, col);
+                findCell(row, col).updateNearbyLandMineCount(count);
+            }
+        }
+    }
+
+    public int getRowSize() {
+        return board.length;
+    }
+
+    public int getColSize() {
+        return board[0].length;
+    }
+
+    public String getSign(int rowIndex, int colIndex) {
+        return findCell(rowIndex, colIndex).getSign();
+    }
+
+    public void flag(int rowIndex, int colIndex) {
+        findCell(rowIndex, colIndex).flag();
+    }
+
+    public boolean isLandMineCell(int selectedRowIndex, int selectedColIndex) {
+        return findCell(selectedRowIndex, selectedColIndex).isLandMine();
+    }
+
+    public void open(int rowIndex, int colIndex) {
+        findCell(rowIndex, colIndex).open();
+    }
+
+    public void openSurroundedCells(int row, int col) {
+        int rowSize = getRowSize();
+        int colSize = getColSize();
+
+        if (row < 0 || row >= rowSize || col < 0 || col >= colSize) {
+            return;
+        }
+        if (isOpendCell(row, col)) {
+            return;
+        }
+        if (isLandMineCell(row, col)) {
+            return;
+        }
+
+        open(row, col);
+
+        if (doesCellHaveLandMineCount(row, col)) {
+            return;
+        }
+
+        openSurroundedCells(row - 1, col - 1);
+        openSurroundedCells(row - 1, col);
+        openSurroundedCells(row - 1, col + 1);
+        openSurroundedCells(row, col - 1);
+        openSurroundedCells(row, col + 1);
+        openSurroundedCells(row + 1, col - 1);
+        openSurroundedCells(row + 1, col);
+        openSurroundedCells(row + 1, col + 1);
+    }
+
+    public boolean isAllCellChecked() {
+        return Arrays.stream(board)
+                .flatMap(Arrays::stream)
+                .allMatch(Cell::isChecked);
+    }
+
+    private Cell findCell(int rowIndex, int colIndex) {
+        return board[rowIndex][colIndex];
+    }
+
+    private int countNearbyLandMines(int row, int col) {
+        int rowSize = getRowSize();
+        int colSize = getColSize();
+
+        int count = 0;
+        if (row - 1 >= 0 && col - 1 >= 0 && isLandMineCell(row - 1, col - 1)) {
+            count++;
+        }
+        if (row - 1 >= 0 && isLandMineCell(row - 1, col)) {
+            count++;
+        }
+        if (row - 1 >= 0 && col + 1 < colSize && isLandMineCell(row - 1, col + 1)) {
+            count++;
+        }
+        if (col - 1 >= 0 && isLandMineCell(row, col - 1)) {
+            count++;
+        }
+        if (col + 1 < colSize && isLandMineCell(row, col + 1)) {
+            count++;
+        }
+        if (row + 1 < rowSize && col - 1 >= 0 && isLandMineCell(row + 1, col - 1)) {
+            count++;
+        }
+        if (row + 1 < rowSize && isLandMineCell(row + 1, col)) {
+            count++;
+        }
+        if (row + 1 < rowSize && col + 1 < colSize && isLandMineCell(row + 1, col + 1)) {
+            count++;
+        }
+        return count;
+    }
+
+    private boolean doesCellHaveLandMineCount(int row, int col) {
+        return findCell(row, col).hasLandMineCount();
+    }
+
+    private boolean isOpendCell(int row, int col) {
+        return findCell(row, col).isOpend();
+    }
+}
