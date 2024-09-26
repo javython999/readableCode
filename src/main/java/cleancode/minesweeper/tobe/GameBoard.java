@@ -1,5 +1,9 @@
 package cleancode.minesweeper.tobe;
 
+import cleancode.minesweeper.tobe.cell.Cell;
+import cleancode.minesweeper.tobe.cell.EmptyCell;
+import cleancode.minesweeper.tobe.cell.LandMineCell;
+import cleancode.minesweeper.tobe.cell.NumberCell;
 import cleancode.minesweeper.tobe.gamelevel.GameLevel;
 
 import java.util.Arrays;
@@ -21,14 +25,14 @@ public class GameBoard {
 
         for (int row = 0; row < rowSize; row++) {
             for (int col = 0; col < colSize; col++) {
-                board[row][col] = Cell.create();
+                board[row][col] = new EmptyCell();
             }
         }
 
         for (int i = 0; i < landMineCount; i++) {
             int landMineRow = new Random().nextInt(rowSize);
             int landMincCol = new Random().nextInt(colSize);
-            findCell(landMineRow, landMincCol).turnOnLandMine();
+            board[landMineRow][landMincCol] =  new LandMineCell();
         }
 
         for (int row = 0; row < rowSize; row++) {
@@ -37,9 +41,20 @@ public class GameBoard {
                     continue;
                 }
                 int count = countNearbyLandMines(row, col);
-                findCell(row, col).updateNearbyLandMineCount(count);
+                if (count == 0) {
+                    continue;
+                }
+                board[row][col] = new NumberCell(count);
             }
         }
+    }
+
+    public String getSign(int rowIndex, int colIndex) {
+        return findCell(rowIndex, colIndex).getSign();
+    }
+
+    private Cell findCell(int rowIndex, int colIndex) {
+        return board[rowIndex][colIndex];
     }
 
     public int getRowSize() {
@@ -48,10 +63,6 @@ public class GameBoard {
 
     public int getColSize() {
         return board[0].length;
-    }
-
-    public String getSign(int rowIndex, int colIndex) {
-        return findCell(rowIndex, colIndex).getSign();
     }
 
     public void flag(int rowIndex, int colIndex) {
@@ -100,10 +111,6 @@ public class GameBoard {
         return Arrays.stream(board)
                 .flatMap(Arrays::stream)
                 .allMatch(Cell::isChecked);
-    }
-
-    private Cell findCell(int rowIndex, int colIndex) {
-        return board[rowIndex][colIndex];
     }
 
     private int countNearbyLandMines(int row, int col) {
