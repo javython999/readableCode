@@ -380,3 +380,49 @@ ex) 일급 함수
 <span style="color: #ff0000">√</span> 특정 도메인 개념에 대해 그 종류와 기능을 명시적으로 표현해줄 수 있다.
 
 <span style="color: #ff0000">√</span> 만약 변경이 정말 잦은 개념은, Enum 보다 DB로 관리하는 것이 나을 수 있다.   
+
+### 다형성 활용하기
+```java
+CellSnapshotstatus status = cellSnapshot.getStatus();
+
+if (status == CellSnapshotStatus.EMPTY) {
+    return EMPTY_SIGN;
+}
+
+if (status == CellSnapshotStatus.FLAG) {
+    return FLAG_SIGN;
+}
+
+if (status == CellSnapshotStatus.LANDMINE) {
+    return LAND_MINE_SIGN;
+}
+
+if (status == CellSnapshotStatus.NUMBER) {
+    return String.valueOf(snapshot.getNearbyLandMineCount());
+}
+
+if (status == CellSnapshotStatus.UNCHECKED) {
+    return UNCHECKED_SIGN;
+}
+
+throw new IllegalStateException("Unexpected cell snapshot status: " + status);
+```
+'어떤 조건을 만족하면, 그 조건을 해당하는 행위를 수행한다' 반복되고 있음
+
+OCP
+* 변화하는 것: 조건 & 행위 -> 구체
+* 변화하지 않는것: 1. 조건을 만족하는가? 2. 행위를 수행한다. -> 추상
+
+`CellSignProvidable` -> 제공해줄 수있는 정보들 정의   
+`CellSignFinder` -> 만족하는 조건을 찾아서 행위를 수행한다.
+
+### 숨겨져있는 도메인 개념 도출하기
+<span style="color: #ff0000">√</span> 도메인 지식은 만드는 것이 아니라 발견하는 것   
+
+<span style="color: #ff0000">√</span> 객체 지향은 현실을 100% 반영하는 도구가 아니라, 흉내내는 것이다.    
+→ 현실 세계에서 쉽게 인지하지 못하는 개념도 도출해서 사용해야 할 때가 있다.  
+
+<span style="color: #ff0000">√</span> 설계할 때는 근시적, 거시적 관점에서 최대한 미래를 예측하고,    
+시간이 지나 만약 틀렸다는 것을 인지하면 언제든 돌아올 수 있도록 코드를 만들어야 한다.   
+→ 완벽한 설계는 없다. 그 당시의 최선이 있을 뿐.  
+---
