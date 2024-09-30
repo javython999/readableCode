@@ -426,3 +426,107 @@ OCP
 시간이 지나 만약 틀렸다는 것을 인지하면 언제든 돌아올 수 있도록 코드를 만들어야 한다.   
 → 완벽한 설계는 없다. 그 당시의 최선이 있을 뿐.  
 ---
+## 코드 다듬기
+### 주석의 양면성
+<span style="color: #ff0000">√</span> 주석이 많다는 것은, 그만큼 비즈니스 요구사항을 코드에 잘 못 녹였다는 이야기.      
+
+<span style="color: #ff0000">√</span> 코드를 설명하는 주석을 쓰면, 코드가 아니라 주석에 의존한다.    
+주석에 의존하여 코드를 작성하면, 적절하지 않은 추상화 레벨을 갖게 되어 낮은 품질의 코드가 만들어진다.  
+
+<span style="color: #ff0000">√</span> 주석을 작성할 때, 자주 변하는 정보는 최대한 지양해서 작성한다.
+
+<span style="color: #ff0000">√</span> 만약 관련 정책이 변경하거나 코드가 변경되었다면, 주석도 잊지 않고 함께 업데이트 한다.   
+주석이 없는 코드보다, 부정확한 주석이 달린 코드가 더 치명적이다.
+
+### 좋은 주석
+<span style="color: #ff0000">√</span> 우리가 리팩토링할 때, 정말 큰 난관중 하나는 히스토리를 전혀 알 수 없는 코드다.    
+
+<span style="color: #ff0000">√</span> 후대에 전해야 할 "의사 결정의 히스토리"를 도저히 코드로 표현할 수 없을 때, 주석으로 상세하게 설명한다.
+```java
+/**
+ * 이 객체가 가지고 있는 정책은,
+ * A안과 B안 중 AB테스트를 통해 결정된 사항을 기반으로 작성된 것이다.
+ * 관련 문서 https://wiki.readable-code.com?pageId=123
+ */
+public class SpecificPolicy { ... }
+```
+<span style="color: #ff0000">√</span> 우리가 가진 모든 표현 방법을 총동원해 코드에 의도를 녹여내고,   
+그럼에도 불구하고 전달해야할 정보가 남았을 때 사용하는 주석.    
+
+### 변수와 메서드의 나열 순서
+<span style="color: #ff0000">√</span> 변수는 사용하는 순서대로 나열 한다.   
+→ 인지적 경제성  
+
+<span style="color: #ff0000">√</span> 메서드의 순서도 고려해보아야 하는데, 객체의 입장에서 생각해보자.    
+```java
+public method1() {
+    method1-1();
+    method1-2();
+}
+
+private method1-1() {..}
+private method1-2() {..}
+
+public method2() {
+  method2-1();
+  method2-2();
+}
+
+private method2-1() {..}
+private method2-2() {..}
+```
+
+```java
+public method1() {
+    method1-1();
+    method1-2();
+}
+
+public method2() {
+  method2-1();
+  method2-2();
+}
+
+private method1-1() {..}
+private method1-2() {..}
+private method2-1() {..}
+private method2-2() {..}
+```
+
+<span style="color: #ff0000">√</span> 객체는 협력을 위한 존재이다. 외부 세계에 내가 어떤 기능을 제공할 수 있는지를 드러낸다.    
+(정해진 답은 아니지만) 공개 메서드를 상단에 배치하는 것을 선호하는 편.
+
+<span style="color: #ff0000">√</span> 공개 메서드끼리도 기준을 가지고 배치하는 것이 좋다.   
+→ 객체 지향을 하다보면 중요 객체의 경우 메서드가 수십개까지도 늘어날 수 있는데,  
+중요도 순, 종류별로 그룹화하여 배치하면 실수로 비슷한 로직의 메서드를 중복으로 만든 것을 방지하고,   
+일관성 있는 로직을 유지할 수있다.  
+→ 상태 변경 >> 판별 >= 조회 메서드  
+
+<span style="color: #ff0000">√</span> 비공개 메서드는, 공개 메서드에서 언급된 순서대로 배치한다.   
+
+<span style="color: #ff0000">√</span> 공통으로 사용하는 메서드라면, (가장 하단과 같은) 적당한 곳에 배치한다.   
+
+중요한 것은, 나열 순서로도 의도와 정보를 전달 할 수 있다는 것.
+
+## 패키지 나누기
+<span style="color: #ff0000">√</span> 패키지는, 문맥으로써의 정보를 제공할 수 있다.    
+→ Beginner, Middle, Advanced가 BeginnerGameLevel, MiddleGameLevel, AdvancedGameLevel이 아니어도 괜찮은 이유중 하나는, gamelevel 패키지 안에 있기 때문이다.  
+
+<span style="color: #ff0000">√</span> 패키지를 쪼개지 않으면 관리가 어려워 진다.
+
+<span style="color: #ff0000">√</span> 패키지를 너무 잘게 쪼개도 마찬가지로 관리가 어려워진다.
+
+<span style="color: #ff0000">√</span> 대규모 패키지 변경은 팀원과 합의를 이룬 시점에 하자.    
+→ 현재 기준으로 본인만 변경하고 있는 부분이라면 괘찮으나, 여러 사람이 변경 중인 부분이나, 공통으로 사용하는 클래스들의 패키지를 한번에 변경하면, 추후 conflict가 생길 수 있다.   
+→ 처음 만들 때부터 잘 고민해서 패키지를 나눠놓는 것이 제일 좋다.     
+
+### IDE의 도움 받기
+<span style="color: #ff0000">√</span> 코드 포맷 정렬: mac: `option` + `cmd` + `L` | win: `ctr` + `alt` + `L`  
+
+<span style="color: #ff0000">√</span> 코드 품질: Sonarlint
+→ lint(linting): 잠재적인 문제가 될 수 있는 오류, 버그, 스타일 등을 미리 알려주는 코드 품질 체크 도구 (ex. 코틀린 - ktlint)    
+
+<span style="color: #ff0000">√</span> 포맷 규칙: .editorconfig    
+→ 여러 사람과 협업을 염두하면 IDE 기본 포맷팅에 익숙해지는 것이 좋다.    
+→ 스타일은 혼자 결정하는 것이 아니라, 팀 내 합의로 도출되어야만 한다.   
+→ 한 번 정해지면 절대적인 것이 아니라, 사용하면서 계속 의견을 듣고 개선/반영하는 것이 좋다.    
