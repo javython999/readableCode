@@ -1,7 +1,7 @@
-package cleancode.studycafe.tobe.io;
+package cleancode.studycafe.self.io;
 
-import cleancode.studycafe.tobe.model.StudyCafeLockerPass;
-import cleancode.studycafe.tobe.model.StudyCafePass;
+import cleancode.studycafe.self.model.StudyCafeLockerPass;
+import cleancode.studycafe.self.model.StudyCafePass;
 
 import java.util.List;
 
@@ -40,10 +40,6 @@ public class OutputHandler {
 
         System.out.println(askMessage);
         System.out.println("1. 예 | 2. 아니오");
-    }
-
-    public void showPassOrderSummary(StudyCafePass selectedPass) {
-        showPassOrderSummary(selectedPass, null);
     }
 
     public void showPassOrderSummary(StudyCafePass selectedPass, StudyCafeLockerPass lockerPass) {
